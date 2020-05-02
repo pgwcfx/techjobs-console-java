@@ -1,15 +1,15 @@
 package org.launchcode.techjobs.console;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
+
+import static java.util.Map.*;
 
 /**
  * Created by LaunchCode
  */
 public class TechJobs {
 
-    private static Scanner in = new Scanner(System.in);
+    public static final Scanner in = new Scanner(System.in);
 
     public static void main (String[] args) {
 
@@ -29,6 +29,7 @@ public class TechJobs {
         System.out.println("Welcome to LaunchCode's TechJobs App!");
 
         // Allow the user to search until they manually quit
+        //noinspection InfiniteLoopStatement
         while (true) {
 
             String actionChoice = getUserSelection("View jobs by:", actionChoices);
@@ -61,9 +62,9 @@ public class TechJobs {
                 String searchTerm = in.nextLine();
 
                 if (searchField.equals("all")) {
-                    System.out.println("Search all fields not yet implemented.");
+                   printJobs(JobData.findByValue(searchTerm.toLowerCase()));
                 } else {
-                    printJobs(JobData.findByColumnAndValue(searchField, searchTerm));
+                    printJobs(JobData.findByColumnAndValue(searchField, searchTerm.toLowerCase()));
                 }
             }
         }
@@ -72,13 +73,13 @@ public class TechJobs {
     // ﻿Returns the key of the selected item from the choices Dictionary
     private static String getUserSelection(String menuHeader, HashMap<String, String> choices) {
 
-        Integer choiceIdx;
-        Boolean validChoice = false;
+        int choiceIdx;
+        boolean validChoice = false;
         String[] choiceKeys = new String[choices.size()];
 
         // Put the choices in an ordered structure so we can
         // associate an integer with each one
-        Integer i = 0;
+        int i = 0;
         for (String choiceKey : choices.keySet()) {
             choiceKeys[i] = choiceKey;
             i++;
@@ -89,7 +90,7 @@ public class TechJobs {
             System.out.println("\n" + menuHeader);
 
             // Print available choices
-            for (Integer j = 0; j < choiceKeys.length; j++) {
+            for (int j = 0; j < choiceKeys.length; j++) {
                 System.out.println("" + j + " - " + choices.get(choiceKeys[j]));
             }
 
@@ -111,6 +112,27 @@ public class TechJobs {
     // Print a list of jobs
     private static void printJobs(ArrayList<HashMap<String, String>> someJobs) {
 
-        System.out.println("printJobs is not implemented yet");
+        for (HashMap<String,String> someJob: someJobs){
+            System.out.println("******");
+
+            List<Map.Entry<String,String>> list = new LinkedList<>(someJob.entrySet());
+            list.sort(Entry.comparingByValue());
+
+            HashMap<String,String> sortedMap = new LinkedHashMap<>();
+            for (Map.Entry<String,String> entry: list){
+                sortedMap.put(entry.getKey(),entry.getValue());
+            }
+
+            for (Map.Entry<String,String> job: sortedMap.entrySet()){
+                System.out.println(job.getKey() + ": " + job.getValue());
+            }
+            System.out.println("******\n");
+        }
+
+        if (someJobs.isEmpty()){
+            System.out.println("No jobs found");
+        }
+
+
     }
 }
